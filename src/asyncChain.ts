@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+// noinspection JSUnusedGlobalSymbols
 
 type ElementDoneCb = (result?: any, lastElement?: boolean) => void
 
@@ -108,13 +109,6 @@ const asyncChain = (
   }
 }
 
-declare global {
-    /* eslint-disable */
-    interface Array<T> {
-        asyncChain(elementHandlerCb: ElementHandlerCb, chainDoneCb: ChainDoneCb): void
-    }
-}
-
 type AElementDoneCb = (result?: any) => void
 type AElementHandlerCb = (
     element: any,
@@ -123,6 +117,14 @@ type AElementHandlerCb = (
     index: number,
 ) => void
 
+declare global {
+    /* eslint-disable */
+    interface Array<T> {
+        asyncChain(elementHandlerCb: ElementHandlerCb, chainDoneCb: ChainDoneCb): void
+    }
+}
+
+
 if (typeof Array.prototype.asyncChain !== 'function') {
     // eslint-disable-next-line no-extend-native,func-names
     Array.prototype.asyncChain = function <T>(
@@ -130,7 +132,6 @@ if (typeof Array.prototype.asyncChain !== 'function') {
         elementHandlerCb: AElementHandlerCb,
         chainDoneCb: ChainDoneCb,
     ) {
-        // debugger
         const aChain = asyncChain(elementHandlerCb, chainDoneCb)
         const length = this.length - 1
         this.forEach((element, index) => {
@@ -154,11 +155,6 @@ if (typeof Array.prototype.asyncChain !== 'function') {
                 )
             } else aChain.add(element)
         })
-        // for (let i = 0; i < length; i += 1)
-        //   aChain.add(this[i])
     }
 }
-
-// [].forEach((p1: any, p2: number, p3: any[]) => {
-// }, undefined)
 export default asyncChain
