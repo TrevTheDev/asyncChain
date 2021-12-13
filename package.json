@@ -1,0 +1,38 @@
+{
+  "name": "asyncchain",
+  "version": "0.0.1",
+  "description": "asyncChain provides an array processor that can handle elements in an asynchronous and lazy manner. asyncChain is similar to map, forEach, filter and reduce except that it is designed to work asynchronously.",
+  "main": "src/asyncChain.ts",
+  "scripts": {
+    "test": "mocha",
+    "lint": "eslint src --ext .ts"
+  },
+  "keywords": [
+    "forEach",
+    "map",
+    "asynchronous",
+    "filter",
+    "reduce",
+    "lazy",
+    "pull"
+  ],
+  "author": "TrevTheDev",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/chai": "^4.3.0",
+    "@types/mocha": "^9.0.0",
+    "@types/node": "^16.11.12",
+    "@typescript-eslint/eslint-plugin": "^5.6.0",
+    "@typescript-eslint/parser": "^5.6.0",
+    "chai": "^4.3.4",
+    "eslint": "^8.4.1",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-chai-expect": "^3.0.0",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-mocha": "^10.0.1",
+    "eslint-plugin-node": "^11.1.0",
+    "mocha": "^9.1.3",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.5.3"
+  }
+}
