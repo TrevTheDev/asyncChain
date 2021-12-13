@@ -9,8 +9,6 @@ similar to `map`, `forEach`, `filter` and `reduce` except that it is designed to
   to be processed [optional]; or
 * one is coding in a lazy (pull) style, where elements are only processes as and when needed.
 
-[TOC]
-
 # How To Use
 
 ## Installation
@@ -78,16 +76,16 @@ const chainDoneFn = (result: number) => {
 
 * `defaultElementHandlerCb`? \<
 
-  [`ElementHandlerCb`]: #ElementHandlerCb
+  [`ElementHandlerCb`](#elementhandlercb-element-elementdonecb-previousresult-index-defaultelementhandlercb)> optional
+  default function to process elements
 
-  > optional default function to process elements
+* `chainDoneCb`? \< [`ChainDoneCb`](#chaindonecbresult) > optional callback made once the chain is done processing
+  returning the result of the last `ElementDone`
 
-* `chainDoneCb`? \< `ChainDoneCb` > optional callback made once the chain is done processing returning the result of the
-  last `ElementDone`
+* `chainEmptyCb`? <[`ChainEmptyCb`](#chainemptycb)> optional callback made whenever there are no more items in the
+  chain.
 
-* `chainEmptyCb`? <`ChainEmptyCb`> optional callback made whenever there are no more items in the chain.
-
-* Returns: [`Chain`](#Chain)
+* Returns: [`Chain`](#chain)
 
 ## Chain
 
