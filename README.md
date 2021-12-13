@@ -74,11 +74,18 @@ const chainDoneFn = (result: number) => {
 
 ## asyncChain(defaultElementHandlerCb, chainDoneCb, chainEmptyCb)
 
-* `defaultElementHandlerCb`? \<`ElementHandlerCb`> optional default function to process elements
+* `defaultElementHandlerCb`? \<
+
+  [`ElementHandlerCb`]: #ElementHandlerCb
+
+  > optional default function to process elements
+
 * `chainDoneCb`? \< `ChainDoneCb` > optional callback made once the chain is done processing returning the result of the
   last `ElementDone`
+
 * `chainEmptyCb`? <`ChainEmptyCb`> optional callback made whenever there are no more items in the chain.
-* Returns: [`Chain`](#chain)
+
+* Returns: [`Chain`](#Chain)
 
 ## Chain
 
@@ -89,8 +96,9 @@ Adds an element to the chain for processing.
 * `element` \<`any`> the element being added to the chain
 * `index`? \<`number`> if provided the user must provide all elements sequentially starting with zero without any
   gaps,or the chain will not process correctly. Elements need not be added in sequence.
-* `elementHandlerCb` ? \<`ElementHandlerCb`> optional `ElementHandlerCb`which must be provided if
-  a `defaultElementHandlerCb` was not provided.
+* `elementHandlerCb` ?
+  \<[`ElementHandlerCb`](#elementhandlercb-element-elementdonecb-previousresult-index-defaultelementhandlercb)>
+  optional `ElementHandlerCb`which must be provided if a `defaultElementHandlerCb` was not provided.
 
 ### chain.queue
 
