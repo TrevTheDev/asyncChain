@@ -9,6 +9,8 @@ similar to `map`, `forEach`, `filter` and `reduce` except that it is designed to
   to be processed [optional]; or
 * one is coding in a lazy (pull) style, where elements are only processes as and when needed.
 
+[TOC]
+
 # How To Use
 
 ## Installation
