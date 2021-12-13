@@ -59,7 +59,6 @@ describe('AsyncChain', () => {
           }, 100)
         },
         (result) => {
-          debugger
           expect(result).to.equal(15)
           done()
         },
@@ -87,7 +86,6 @@ describe('AsyncChain', () => {
           }, 100)
         },
         (result) => {
-          debugger
           expect(result).to.equal(15)
           done()
         },

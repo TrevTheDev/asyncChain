@@ -58,7 +58,6 @@ const asyncChain = (
       if (queue[currentItemIndex]) {
         const { element, removeElementFromQueue, elementHandlerCb } = queue[currentItemIndex]
         if (!done && !processing && element !== undefined) {
-          // debugger
           processing = true
           elementHandlerCb(
             element,
@@ -135,7 +134,6 @@ if (typeof Array.prototype.asyncChain !== 'function') {
         const aChain = asyncChain(elementHandlerCb, chainDoneCb)
         const length = this.length - 1
         this.forEach((element, index) => {
-            debugger
             if (index === length) {
                 aChain.add(
                     element,
@@ -146,7 +144,6 @@ if (typeof Array.prototype.asyncChain !== 'function') {
                         previousResult: any,
                         indexA: number,
                     ) => {
-                        debugger
                         elementHandlerCb(
                             elementA,
                             (result: any) => elementDone(result, true),
