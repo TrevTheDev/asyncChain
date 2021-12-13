@@ -121,11 +121,9 @@ will be able to be added.
 
 ## ElementHandlerCb (element, elementDoneCb, previousResult, index, defaultElementHandlerCb)
 
-This is the callback to process an element in the array. It can be specified as a `defaultElementHandlerCb`](
-
-# asyncchaindefaultelementhandlercb-chaindonecb-chainemptycb) which applies to all elements that do not include
-
-an [`elementHandlerCb`](#chainaddelement-index-elementhandlercb) when added.
+This is the callback to process an element in the array. It can be specified as
+a [`defaultElementHandlerCb`](#asyncchaindefaultelementhandlercb-chaindonecb-chainemptycb) which applies to all elements
+that do not include an [`elementHandlerCb`](#chainaddelement-index-elementhandlercb) when added.
 
 * `element` \<`any`> the element to be handled
 * `elementDone` \<[`ElementDone`](#elementdoneresult-lastelement)>  function called to signal that the element has been
