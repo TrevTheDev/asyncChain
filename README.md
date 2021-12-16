@@ -1,7 +1,8 @@
-# asyncChain
+# asynchronousChain
 
-`asyncChain` provides an array processor that handle array elements in an asynchronous and lazy manner.   `asyncChain`
-is aligned to `map`, `forEach`, `filter` and `reduce` but it is designed to work asynchronously. It is useful if:
+`asynchronousChain` provides an array processor that handle array elements in an asynchronous and lazy
+manner.   `asynchronousChain` is aligned to `map`, `forEach`, `filter` and `reduce` but it is designed to work
+asynchronously. It is useful if:
 
 * array elements are required to be processed asynchronously;
 * results from element processing must be returned sequentially;
@@ -16,13 +17,13 @@ is aligned to `map`, `forEach`, `filter` and `reduce` but it is designed to work
 ## Installation
 
 ```shell
-npm install @trevthedev/asyncchain
+npm install @trevthedev/asynchronouschain
 ```
 
 ## Basic Usage
 
 ```typescript
-import asyncChain from '@trevthedev/asyncChain'
+import asynchronousChain from '@trevthedev/asynchronousChain'
 
 const elementHandlerCb = (
     // element iterated over, in this case an async function
@@ -47,7 +48,7 @@ const elementHandlerCb = (
 
 const chainDoneCb = (result: any) => console.log(`chain completed with ${result}`)
 
-const chain = asyncChain(elementHandlerCb, chainDoneCb)
+const chain = asynchronousChain(elementHandlerCb, chainDoneCb)
 
 chain.add((asyncFn: any) => setTimeout(() => asyncFn(1), 200))
 chain.add((asyncFn: any) => setTimeout(() => asyncFn(2), 100))
@@ -81,7 +82,7 @@ const elementHandlerCb = (
 
 const chainDoneCb = (result: any) => console.log(`chain completed with ${result}`)
 
-const chain = asyncChain(elementHandlerCb, chainDoneCb, undefined, true)
+const chain = asynchronousChain(elementHandlerCb, chainDoneCb, undefined, true)
 
 chain.add((asyncFn: any) => setTimeout(() => asyncFn(1), 100))
 chain.add((asyncFn: any) => setTimeout(() => asyncFn(2), 100))
@@ -114,12 +115,12 @@ const chainDoneCb = (result: number) => console.log(`chain completed with ${resu
     (asyncFn: (result: number) => void) => setTimeout(() => asyncFn(1), 200),
     (asyncFn: (result: number) => void) => setTimeout(() => asyncFn(2), 100),
     (asyncFn: (result: number) => void) => setTimeout(() => asyncFn(3), 100),
-].asyncChain(elementHandlerCb, chainDoneCb)
+].asynchronousChain(elementHandlerCb, chainDoneCb)
 ```
 
-## asyncChain(defaultElementHandlerCb, chainDoneCb, chainEmptyCb)
+## asynchronousChain(defaultElementHandlerCb, chainDoneCb, chainEmptyCb)
 
-* [`defaultElementHandlerCb`](#asyncchaindefaultelementhandlercb-chaindonecb-chainemptycb)?
+* [`defaultElementHandlerCb`](#asynchronouschaindefaultelementhandlercb-chaindonecb-chainemptycb)?
   \<[`ElementHandlerCb`](#elementhandlercb)> optional default function to process elements
 
 * `chainDoneCb`? \< [`ChainDoneCb`](#chaindonecbresult) > optional callback made once the chain is done processing
@@ -143,7 +144,7 @@ Adds an element to the chain for processing.
   without any gaps, or the chain will not process correctly. Elements need not be added in sequence, but will remain
   unprocessed until all predecessor elements have been added.
 * `elementHandlerCb` ? \<[`ElementHandlerCb`](#elementhandlercb)>  optional `ElementHandlerCb`which must be provided if
-  a [`defaultElementHandlerCb`](#asyncchaindefaultelementhandlercb-chaindonecb-chainemptycb) was not provided.
+  a [`defaultElementHandlerCb`](#asynchronouschaindefaultelementhandlercb-chaindonecb-chainemptycb) was not provided.
 
 ### chain.queue
 
@@ -167,8 +168,8 @@ will be able to be added.
 ## ElementHandlerCb
 
 This is the callback to process an element in the array. It can be specified as
-a [`defaultElementHandlerCb`](#asyncchaindefaultelementhandlercb-chaindonecb-chainemptycb) which applies to all elements
-that do not include an [`elementHandlerCb`](#chainaddelement-index-elementhandlercb) when added.
+a [`defaultElementHandlerCb`](#asynchronouschaindefaultelementhandlercb-chaindonecb-chainemptycb) which applies to all
+elements that do not include an [`elementHandlerCb`](#chainaddelement-index-elementhandlercb) when added.
 
 It takes two forms depending on the flag `processOnlyAfterPreviousElementDone` - see below. The first form provides a
 callback: `awaitPreviousResultCb` which is called once a result is returned from the previous element, or immediately if
@@ -219,5 +220,5 @@ This callback is made every time the chain contains no further elements to proce
 
 # Limitation
 
-`asyncChain` provides no handling for errors that may occur during the processing of an element. If an error occurs it
-should be appropriately handled to not leave any enqueued elements in an un-processable state.
+`asynchronousChain` provides no handling for errors that may occur during the processing of an element. If an error
+occurs it should be appropriately handled to not leave any enqueued elements in an un-processable state.
