@@ -21,40 +21,40 @@ export type ElementHandlerCb2 = (
 ) => void
 
 type chain = {
-  [index: number]: {
-    element: any,
-    elementHandlerCb: ElementHandlerCb,
-  }
+    [index: number]: {
+        element: any,
+        elementHandlerCb: ElementHandlerCb,
+    }
 }
 
 type ResultsAwaitingPreviousResultCb = {
-  [index: number]: any
+    [index: number]: any
 }
 
 type PreviousResultCbsAwaitingResult = {
-  [index: number]: {
-    previousResultCb: PreviousResultCb,
-    elementDone: ElementDone
-  }
+    [index: number]: {
+        previousResultCb: PreviousResultCb,
+        elementDone: ElementDone
+    }
 }
 
 type ChainDoneCb = (result: any) => void
 
 export interface Chain {
-  add: (
-      item: any,
-      index?: number,
-      elementHandlerCb?: ElementHandlerCb | ElementHandlerCb2
-  ) => void
-  done: (result: any) => void
-  readonly queue: chain
-  readonly queueLength: number
-  readonly resultsAwaitingPreviousResultCbLength: number
-  readonly previousResultCbsAwaitingResultLength: number
-  readonly length: number
+    add: (
+        item: any,
+        index?: number,
+        elementHandlerCb?: ElementHandlerCb | ElementHandlerCb2
+    ) => void
+    done: (result: any) => void
+    readonly queue: chain
+    readonly queueLength: number
+    readonly resultsAwaitingPreviousResultCbLength: number
+    readonly previousResultCbsAwaitingResultLength: number
+    readonly length: number
 }
 
-const asynchronousChain = (
+const asyncChain = (
   defaultElementHandlerCb?: ElementHandlerCb | ElementHandlerCb2,
   chainDoneCb?: ChainDoneCb,
   chainEmptyCb?: ChainEmptyCb,
@@ -93,8 +93,8 @@ const asynchronousChain = (
     done = true
     if (
       Object.keys(queue).length === 0
-        && Object.keys(resultsAwaitingPreviousResultCb).length === 0
-        && Object.keys(previousResultCbsAwaitingResult).length === 0) {
+            && Object.keys(resultsAwaitingPreviousResultCb).length === 0
+            && Object.keys(previousResultCbsAwaitingResult).length === 0) {
       if (chainDoneCb) setImmediate(() => chainDoneCb(result))
     } else throw new Error('done called, but queue is not empty')
   }
@@ -147,7 +147,7 @@ const asynchronousChain = (
     ): void => {
       const key: number = index === undefined ? autoItemIndex : index
       autoItemIndex += 1
-      if (done) throw new Error('asynchronousChain is marked as done, meaning no elements can be added')
+      if (done) throw new Error('asyncChain is marked as done, meaning no elements can be added')
       if (queue[key]) {
         throw new Error(`
             element
@@ -201,20 +201,20 @@ export type AElementHandlerCb = (
 ) => void
 
 declare global {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  interface Array<T> {
-    asynchronousChain(elementHandlerCb: AElementHandlerCb, chainDoneCb: ChainDoneCb): void
-  }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    interface Array<T> {
+        asyncChain(elementHandlerCb: AElementHandlerCb, chainDoneCb: ChainDoneCb): void
+    }
 }
 
-if (typeof Array.prototype.asynchronousChain !== 'function') {
+if (typeof Array.prototype.asyncChain !== 'function') {
   // eslint-disable-next-line func-names,no-extend-native
-  Array.prototype.asynchronousChain = function (
+  Array.prototype.asyncChain = function (
     this: [],
     elementHandlerCb: AElementHandlerCb,
     chainDoneCb: ChainDoneCb,
   ) {
-    const aChain = asynchronousChain(elementHandlerCb, chainDoneCb)
+    const aChain = asyncChain(elementHandlerCb, chainDoneCb)
     const length = this.length - 1
     this.forEach((element, index) => {
       if (index === length) {
@@ -242,4 +242,4 @@ if (typeof Array.prototype.asynchronousChain !== 'function') {
   }
 }
 
-export default asynchronousChain
+export default asyncChain

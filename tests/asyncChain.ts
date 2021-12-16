@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { expect } from 'chai'
 
-import asynchronousChain from '../src/asynchronousChain'
+import asyncChain from '../src/asyncChain'
 
-import type { ElementHandlerCb, ElementHandlerCb2, APreviousResultCb } from '../src/asynchronousChain'
+import type { ElementHandlerCb, ElementHandlerCb2, APreviousResultCb } from '../src/asyncChain'
 
 const asyncFunc = (element: any, time: number) => {
   let fin = false
@@ -37,9 +37,9 @@ const asyncFunc = (element: any, time: number) => {
   }
 }
 
-describe('asynchronousChain', () => {
+describe('AsyncChain2', () => {
   describe('Basics', () => {
-    it('chain should be done and return 0+1+2+3+4+5=15', (done) => {
+    it('chain2 should be done and return 0+1+2+3+4+5=15', (done) => {
       const conArray = [5, 1, 2, 3, 4, 0]
       const eHandlerCb: ElementHandlerCb = (element, awaitPreviousResult) => {
         setTimeout(() => {
@@ -58,7 +58,7 @@ describe('asynchronousChain', () => {
           })
         }, 100)
       }
-      const chain = asynchronousChain(
+      const chain = asyncChain(
         eHandlerCb,
         (result) => {
           console.log(`STEP 5: final result ${result}`)
@@ -91,7 +91,7 @@ describe('asynchronousChain', () => {
           })
         }, 100)
       }
-      const chain = asynchronousChain(
+      const chain = asyncChain(
         eHandlerCb,
         (result) => {
           console.log(`STEP 4: result: ${result}`)
@@ -129,7 +129,7 @@ describe('asynchronousChain', () => {
 
       const chainDoneCb = (result: any) => console.log(`chain completed with ${result}`)
 
-      const chain = asynchronousChain(elementHandlerCb, chainDoneCb)
+      const chain = asyncChain(elementHandlerCb, chainDoneCb)
 
       chain.add((asyncFn: any) => setTimeout(() => asyncFn(1), 200))
       chain.add((asyncFn: any) => setTimeout(() => asyncFn(2), 100))
@@ -153,7 +153,7 @@ describe('asynchronousChain', () => {
 
       const chainDoneCb = (result: any) => console.log(`chain completed with ${result}`)
 
-      const chain = asynchronousChain(elementHandlerCb, chainDoneCb, undefined, true)
+      const chain = asyncChain(elementHandlerCb, chainDoneCb, undefined, true)
 
       chain.add((asyncFn: any) => setTimeout(() => asyncFn(1), 100))
       chain.add((asyncFn: any) => setTimeout(() => asyncFn(2), 100))
@@ -181,7 +181,7 @@ describe('asynchronousChain', () => {
         (asyncFn: (result: number) => void) => setTimeout(() => asyncFn(1), 200),
         (asyncFn: (result: number) => void) => setTimeout(() => asyncFn(2), 100),
         (asyncFn: (result: number) => void) => setTimeout(() => asyncFn(3), 100),
-      ].asynchronousChain(elementHandlerCb, chainDoneCb)
+      ].asyncChain(elementHandlerCb, chainDoneCb)
     })
   })
 })
