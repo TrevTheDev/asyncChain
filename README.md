@@ -56,8 +56,8 @@ chain.add((asyncFn: any) => setTimeout(() => asyncFn(3), 100))
 
 ## Serial Usage
 
-By default async elements start processing as soon as they are added and as they may require the result from their
-predecessor before being finalised this is provided
+By default, async elements are passed to the `elementHandlerCb` as they are added. Elements may require the result from
+their predecessor before being finalised this is provided
 by [`awaitPreviousResult`](#elementhandlercb-element-awaitpreviousresult-index) - however if elements are processed in
 series then this can be done away with and a
 simplified [`elementHandlerCb`](#elementhandlercb-element-elementdone-previousresult-index) can be used. This approach
