@@ -57,9 +57,11 @@ chain.add((asyncFn: any) => setTimeout(() => asyncFn(3), 100))
 ## Serial Usage
 
 By default async elements start processing as soon as they are added and as they may require the result from their
-predecessor before being finalised this is provided by `awaitPreviousResult` - however if elements are processed in
-series then this can be done away with and a simplified `elementHandler` can be used. This approach in general disallows
-parallel processing and so may be less performant.
+predecessor before being finalised this is provided
+by [`awaitPreviousResult`](#elementhandlercb-element-awaitpreviousresult-index) - however if elements are processed in
+series then this can be done away with and a
+simplified [`elementHandlerCb`](#elementhandlercb-element-elementdone-previousresult-index) can be used. This approach
+in general disallows parallel processing and so may be less performant.
 
 ```typescript
 const elementHandlerCb = (
@@ -118,8 +120,7 @@ const chainDoneCb = (result: number) => console.log(`chain completed with ${resu
 ## asyncChain(defaultElementHandlerCb, chainDoneCb, chainEmptyCb)
 
 * [`defaultElementHandlerCb`](#asyncchaindefaultelementhandlercb-chaindonecb-chainemptycb)?
-  \<[`ElementHandlerCb`](#elementhandlercb-element-elementdonecb-previousresult-index-defaultelementhandlercb)> optional
-  default function to process elements
+  \<[`ElementHandlerCb`](#elementhandlercb)> optional default function to process elements
 
 * `chainDoneCb`? \< [`ChainDoneCb`](#chaindonecbresult) > optional callback made once the chain is done processing
   returning the result of the last `ElementDone`
@@ -141,9 +142,7 @@ Adds an element to the chain for processing.
 * `index`? \<`number`> optional index, if provided the user must provide all elements sequentially starting with zero
   without any gaps, or the chain will not process correctly. Elements need not be added in sequence, but will remain
   unprocessed until all predecessor elements have been added.
-* `elementHandlerCb` ?
-  \<[`ElementHandlerCb`](#elementhandlercb-element-elementdonecb-previousresult-index-defaultelementhandlercb)>
-  optional `ElementHandlerCb`which must be provided if
+* `elementHandlerCb` ? \<[`ElementHandlerCb`](#elementhandlercb)>  optional `ElementHandlerCb`which must be provided if
   a [`defaultElementHandlerCb`](#asyncchaindefaultelementhandlercb-chaindonecb-chainemptycb) was not provided.
 
 ### chain.queue
