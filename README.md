@@ -1,12 +1,14 @@
 # asyncChain
 
-`asyncChain` provides an array processor that can handle elements in an asynchronous and lazy manner.   `asyncChain` is
-similar to `map`, `forEach`, `filter` and `reduce` except that it is designed to work asynchronously. It is useful if:
+`asyncChain` provides an array processor that handle array elements in an asynchronous and lazy manner.   `asyncChain`
+is aligned to `map`, `forEach`, `filter` and `reduce` but it is designed to work asynchronously. It is useful if:
 
-* elements are required to be processed asynchronously;
-* elements must be processed sequentially;
+* array elements are required to be processed asynchronously;
+* results from element processing must be returned sequentially;
+* element are to be processed in parallel or in series;
 * the array may not exist, or be fully known or complete but processing should proceed as elements are known or required
-  to be processed [optional]; or
+  to be processed;
+* the array may never be complete; or
 * one is coding in a lazy (pull) style, where elements are only processes as and when needed.
 
 # How To Use
@@ -22,54 +24,95 @@ npm install @trevthedev/asyncchain
 ```typescript
 import asyncChain from '@trevthedev/asyncChain'
 
-const elementHandlerFn = (
-    /* the element asyncChain will iterate over in this case a simple function */
-    element: (result: any) => void,
-    /* a function to call once the element is done processing */
+const elementHandlerCb = (
+    // element iterated over, in this case an async function
+    asyncFn: (success: (result: number) => void) => void,
+    // a function to await the previous element's result
+    awaitPreviousResult: (previousResultCb: (
+        previousResult: undefined | number,
+        elementDone: (result: number, lastElement: boolean) => void
+    ) => any) => void,
+) => {
+    asyncFn((result: number) => {
+        // elements are processed after being added
+        console.log(`async element result received: ${result}`)
+        awaitPreviousResult((previousResult, elementDone) => {
+            // results are always returned in sequence
+            console.log(`async element previousResult received: ${previousResult}`)
+            // returns result from async function and flags element as done
+            setTimeout(() => elementDone(result * 2, result === 3), 100)
+        })
+    })
+}
+
+const chainDoneCb = (result: any) => console.log(`chain completed with ${result}`)
+
+const chain = asyncChain(elementHandlerCb, chainDoneCb)
+
+chain.add((asyncFn: any) => setTimeout(() => asyncFn(1), 200))
+chain.add((asyncFn: any) => setTimeout(() => asyncFn(2), 100))
+chain.add((asyncFn: any) => setTimeout(() => asyncFn(3), 100))
+```
+
+## Serial Usage
+
+By default async elements start processing as soon as they are added and as they may require the result from their
+predecessor before being finalised this is provided by `awaitPreviousResult` - however if elements are processed in
+series then this can be done away with and a simplified `elementHandler` can be used. This approach in general disallows
+parallel processing and so may be less performant.
+
+```typescript
+const elementHandlerCb = (
+    // element iterated over, in this case an async function
+    asyncFn: (success: (result: number) => void) => void,
+    // a function to call once the element is done processing
     elementDone: (result: number, lastElement?: boolean) => any,
-    /* the result from the preceeding `elementDone` coll */
+    /* the result from the preceding `elementDone` coll */
     previousResult: undefined | number,
 ) => {
-    element((result: number) => {
+    asyncFn((result: number) => {
+        // elements are processed sequentially based on index
         console.log(`async element result received: ${result} and previous result: ${previousResult}`)
         setTimeout(() => elementDone(result * 2, result === 3), 100)
     })
 }
 
-const chainDoneFn = (result: any) => console.log(`chain completed with ${result}`)
+const chainDoneCb = (result: any) => console.log(`chain completed with ${result}`)
 
-const chain = asyncChain(elementHandlerFn, chainDoneFn)
+const chain = asyncChain(elementHandlerCb, chainDoneCb, undefined, true)
 
-chain.add((result: any) => setTimeout(() => result(1), 100))
-chain.add((result: any) => setTimeout(() => result(2), 100))
-chain.add((result: any) => setTimeout(() => result(3), 100))
-
+chain.add((asyncFn: any) => setTimeout(() => asyncFn(1), 100))
+chain.add((asyncFn: any) => setTimeout(() => asyncFn(2), 100))
+chain.add((asyncFn: any) => setTimeout(() => asyncFn(3), 100))
 ```
 
 ## Array Prototype Usage
 
-```typescript
-import asyncChain from '@trevthedev/asyncChain'
+If the array is complete and will not change, then an `Array.prototype` method is provided to simplify usage:
 
-const elementHandlerFn = (
-    element: (result: any) => void,
-    elementDone: (result: number) => any,
-    previousResult: undefined | number,
+```typescript
+const elementHandlerCb = (
+    // element iterated over, in this case an async function
+    asyncFn: (result: any) => void,
+    // a function to await the results from the previous element
+    awaitPreviousResult: (previousResultCb: APreviousResultCb) => void,
 ) => {
-    element((result: number) => {
-        console.log(`async element result received: ${result} and previous result: ${previousResult}`)
-        setTimeout(() => elementDone(result * 2), 100)
+    asyncFn((result: number) => {
+        console.log(`result being processed: ${result}`)
+        awaitPreviousResult((previousResult, elementDone) => {
+            // results are always returned in sequence
+            console.log(`async element received previous result: ${previousResult}`)
+            // returns result from async function and flags element as done
+            setTimeout(() => elementDone(result * 2), 100)
+        })
     })
 }
-const chainDoneFn = (result: number) => {
-    console.log(`chain completed with ${result}`)
-}
+const chainDoneCb = (result: number) => console.log(`chain completed with ${result}`);
 [
-    (eHandler: any) => setTimeout(() => eHandler(1), 100),
-    (eHandler: any) => setTimeout(() => eHandler(2), 100),
-    (eHandler: any) => setTimeout(() => eHandler(3), 100),
-].asyncChain(elementHandlerFn, chainDoneFn)
-
+    (asyncFn: (result: number) => void) => setTimeout(() => asyncFn(1), 200),
+    (asyncFn: (result: number) => void) => setTimeout(() => asyncFn(2), 100),
+    (asyncFn: (result: number) => void) => setTimeout(() => asyncFn(3), 100),
+].asyncChain(elementHandlerCb, chainDoneCb)
 ```
 
 ## asyncChain(defaultElementHandlerCb, chainDoneCb, chainEmptyCb)
@@ -83,6 +126,8 @@ const chainDoneFn = (result: number) => {
 
 * `chainEmptyCb`? <[`ChainEmptyCb`](#chainemptycb)> optional callback made whenever there are no more items in the
   chain.
+* `processOnlyAfterPreviousElementDone` <`boolean=false`> whether to only start processing each element after its
+  predecessor has called `elementDone` or whether each element should start processing as soon as it is added (default).
 
 * Returns: [`Chain`](#chain)
 
@@ -92,9 +137,10 @@ const chainDoneFn = (result: number) => {
 
 Adds an element to the chain for processing.
 
-* `element` \<`any`> the element being added to the chain
-* `index`? \<`number`> if provided the user must provide all elements sequentially starting with zero without any gaps,
-  or the chain will not process correctly. Elements need not be added in sequence.
+* `element` \<`any`> the element to add to the chain
+* `index`? \<`number`> optional index, if provided the user must provide all elements sequentially starting with zero
+  without any gaps, or the chain will not process correctly. Elements need not be added in sequence, but will remain
+  unprocessed until all predecessor elements have been added.
 * `elementHandlerCb` ?
   \<[`ElementHandlerCb`](#elementhandlercb-element-elementdonecb-previousresult-index-defaultelementhandlercb)>
   optional `ElementHandlerCb`which must be provided if
@@ -119,25 +165,39 @@ will be able to be added.
 
 * `result` \<`any`> the final result passed to the [`ChainDoneCb`](#chaindonecbresult)
 
-## ElementHandlerCb (element, elementDoneCb, previousResult, index, defaultElementHandlerCb)
+## ElementHandlerCb
 
 This is the callback to process an element in the array. It can be specified as
 a [`defaultElementHandlerCb`](#asyncchaindefaultelementhandlercb-chaindonecb-chainemptycb) which applies to all elements
 that do not include an [`elementHandlerCb`](#chainaddelement-index-elementhandlercb) when added.
 
+It takes two forms depending on the flag `processOnlyAfterPreviousElementDone` - see below. The first form provides a
+callback: `awaitPreviousResultCb` which is called once a result is returned from the previous element, or immediately if
+the first element.
+
+In the second form it is called once a result is returned from the previous element, or immediately if the first
+element.
+
+### ElementHandlerCb (element, awaitPreviousResult, index)
+
+* `element` \<`any`> the element to be handled
+* `awaitPreviousResult` \<`(previousResultCb: PreviousResultCb) => void`>  function called after the previous element
+  returns its result.  `previousResultCb` provides a function `elementDone` to enable this element to return its result.
+* `index` \<`number`> the zero based index of this element
+
+### ElementHandlerCb (element, elementDone, previousResult, index)
+
 * `element` \<`any`> the element to be handled
 * `elementDone` \<[`ElementDone`](#elementdoneresult-lastelement)>  function called to signal that the element has been
-  processed and the chain can proceed to the next element if being processed sequentially.
-* `previousResult` \<`any`> any `result` returned via the previous element's `elementDone` callback
+  processed and the chain can proceed to the next element.
+* `previousResult` \<`any`> the`result` returned via the previous element's `elementDone` function
 * `index` \<`number`> the zero based index of this element
-* [`defaultElementHandlerCb`](#asyncchaindefaultelementhandlercb-chaindonecb-chainemptycb)
-  \<[`ElementHandlerCb`](#elementhandlercb-element-elementdonecb-previousresult-index-defaultelementhandlercb)
-  | `undefined`> if a [`defaultElementHandlerCb`](#asyncchaindefaultelementhandlercb-chaindonecb-chainemptycb) is
-  provided and an [`elementHandlerCb`](#chainaddelement-index-elementhandlercb) is also provided, then this optional
-  callback is provided on the [`elementHandlerCb`](#chainaddelement-index-elementhandlercb) so that
-  the [`defaultElementHandlerCb`](#asyncchaindefaultelementhandlercb-chaindonecb-chainemptycb)  may be called if
-  required
-* returns `void`
+
+## PreviousResultCb(previousResult, elementDone)
+
+* `previousResult` \<`any`> result returned from processing the previous element
+* `elementDone` \<[`ElementDone`](#elementdoneresult-lastelement)>  function called to signal that the element has been
+  processed and the chain can proceed to the next element.
 
 ## ElementDone(result, lastElement)
 
@@ -150,18 +210,15 @@ that do not include an [`elementHandlerCb`](#chainaddelement-index-elementhandle
 
 This callback is made after the `lastElement` was specified as true via [`ElementDone`](#elementdoneresult-lastelement),
 or after `chain.done` is called. If after this callback any items remain in the chain an error will be thrown. An error
-will be thrown if `chain.add` is called.
+will be thrown if `chain.add` is called after `ChainDoneCb`.
 
-* `result` \<`any`> result returned from`ElementDone` or `chain.done`
+* `result` \<`any`> result returned from last`ElementDone` or `chain.done`
 
 ## ChainEmptyCb()
 
 This callback is made every time the chain contains no further elements to process.
 
-# Assumption & Limitation
+# Limitation
 
-`asyncChain` provides no error handling for errors that may occur during the processing of an element. If an error
-should occur it should be appropriately handled to not leave any enqueued elements in an un-processable state.
-`asyncChain` tracks the start of async calls sequentially and only processes one async call at a time, however some use
-cases will exist where the start need not be sequential and processing can be paralleled, but where the end results need
-to be processed sequential. It would not be hard to modify this code to do so, but for simplicity, it has not been done.
+`asyncChain` provides no handling for errors that may occur during the processing of an element. If an error occurs it
+should be appropriately handled to not leave any enqueued elements in an un-processable state.

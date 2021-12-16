@@ -54,5 +54,19 @@
         ]
       }
     ]
+  },
+  "settings": {
+    "node": {
+      "tryExtensions": [
+        ".js",
+        ".json",
+        ".node",
+        ".ts",
+        ".d.ts"
+      ]
+    },
+    "import/resolver": {
+      "typescript": {}
+    }
   }
 }
