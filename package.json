@@ -1,6 +1,6 @@
 {
-  "name": "asyncchain",
-  "version": "0.0.1",
+  "name": "@trevthedev/asyncchain",
+  "version": "0.0.2",
   "description": "asyncChain provides an array processor that can handle elements in an asynchronous and lazy manner. asyncChain is similar to map, forEach, filter and reduce except that it is designed to work asynchronously.",
   "main": "src/asyncChain.ts",
   "scripts": {
@@ -18,6 +18,15 @@
   ],
   "author": "TrevTheDev",
   "license": "MIT",
+  "homepage": "https://github.com/TrevTheDev/asyncChain",
+  "bugs": {
+    "url": "https://github.com/TrevTheDev/asyncChain/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TrevTheDev/asyncChain.git"
+  },
+  "private": false,
   "devDependencies": {
     "@types/chai": "^4.3.0",
     "@types/mocha": "^9.0.0",

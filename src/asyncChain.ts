@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // noinspection JSUnusedGlobalSymbols
 
-type ElementDone = (result?: any, lastElement?: boolean) => void
+export type ElementDone = (result?: any, lastElement?: boolean) => void
 
-type ChainEmptyCb = () => void
+export type ChainEmptyCb = () => void
 
-type PreviousResultCb = (previousResult: any, elementDone: ElementDone) => void
+export type PreviousResultCb = (previousResult: any, elementDone: ElementDone) => void
 
 export type ElementHandlerCb = (
     element: any,
@@ -20,25 +20,29 @@ export type ElementHandlerCb2 = (
     index: number
 ) => void
 
-type chain = {
-    [index: number]: {
-        element: any,
-        elementHandlerCb: ElementHandlerCb,
-    }
+export type ChainLink = {
+    element: any,
+    elementHandlerCb: ElementHandlerCb,
 }
 
-type ResultsAwaitingPreviousResultCb = {
+export type chain = {
+    [index: number]: ChainLink
+}
+
+export type ResultsAwaitingPreviousResultCb = {
     [index: number]: any
 }
 
-type PreviousResultCbsAwaitingResult = {
-    [index: number]: {
-        previousResultCb: PreviousResultCb,
-        elementDone: ElementDone
-    }
+export type PreviousResultCbAwaitingResult = {
+    previousResultCb: PreviousResultCb,
+    elementDone: ElementDone
 }
 
-type ChainDoneCb = (result: any) => void
+export type PreviousResultCbsAwaitingResult = {
+    [index: number]: PreviousResultCbAwaitingResult
+}
+
+export type ChainDoneCb = (result: any) => void
 
 export interface Chain {
     add: (
@@ -107,11 +111,11 @@ const asyncChain = (
           const elementDone = (result: any, lastItem = false) => {
             if (lastItem || done) chainDone(result)
             else {
-              if (previousResultCbsAwaitingResult[idx + 1]) {
+              if (previousResultCbsAwaitingResult[idx + 1] !== undefined) {
                 const {
                   previousResultCb: previousResultCb_,
                   elementDone: elementDone_,
-                } = previousResultCbsAwaitingResult[idx + 1]
+                } = <PreviousResultCbAwaitingResult>previousResultCbsAwaitingResult[idx + 1]
 
                 setImmediate(() => previousResultCb_(result, elementDone_))
                 delete previousResultCbsAwaitingResult[idx + 1]
@@ -131,7 +135,7 @@ const asyncChain = (
         }
 
         if (!done) {
-          const { element, elementHandlerCb } = queue[currentItemIndex]
+          const { element, elementHandlerCb } = <ChainLink>queue[currentItemIndex]
           delete queue[currentItemIndex]
           elementHandlerCb(element, awaitPreviousResult, currentItemIndex)
           if (!processOnlyAfterPreviousElementDone) currentItemIndex += 1
@@ -139,7 +143,7 @@ const asyncChain = (
       } else if (chainEmptyCb && Object.keys(queue).length === 0) chainEmptyCb()
     })
   }
-  return {
+  return <Chain>{
     add: (
       element,
       index,
@@ -148,13 +152,7 @@ const asyncChain = (
       const key: number = index === undefined ? autoItemIndex : index
       autoItemIndex += 1
       if (done) throw new Error('asyncChain is marked as done, meaning no elements can be added')
-      if (queue[key]) {
-        throw new Error(`
-            element
-            with index '${index}'
-            already
-            added`)
-      }
+      if (queue[key]) throw new Error(`element with index : ${index} already added`)
       let elementHandlerCb_: ElementHandlerCb
       if (!elementHandlerCb && !defaultElementHandlerCb) throw new Error('no elementHandlerCb provided and one is required')
       if (!elementHandlerCb) elementHandlerCb_ = defaultElementHandlerCb_
