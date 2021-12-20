@@ -1,6 +1,6 @@
 {
   "name": "@trevthedev/asyncchain",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "asyncChain provides an array processor that can handle elements in an asynchronous and lazy manner. asyncChain is similar to map, forEach, filter and reduce except that it is designed to work asynchronously.",
   "main": "./build/cjs/asyncChain.js",
   "types": "./build/cjs/asyncChain.d.ts",
